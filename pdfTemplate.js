@@ -11,7 +11,8 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
     .map((l) => `<p>${l}</p>`)
     .join("");
 
-  return `<!DOCTYPE html>
+  return `
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8" />
@@ -32,6 +33,7 @@ body {
   font-family: 'Playfair Display', serif;
 }
 
+/* ===== PAGE ===== */
 .page {
   position: relative;
   width: 794px;
@@ -57,14 +59,19 @@ body {
   z-index: 1;
 }
 
+/* CINEMATIC VIGNETTE (STRONGER) */
 .bg-vignette {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at center, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.75) 100%);
+  background:
+    radial-gradient(circle at center,
+      rgba(0,0,0,0.15) 0%,
+      rgba(0,0,0,0.55) 55%,
+      rgba(0,0,0,0.92) 100%);
   z-index: 2;
 }
 
-/* ===== FRAME ===== */
+/* ===== GOLD FRAME ===== */
 .frame {
   position: absolute;
   inset: 40px;
@@ -86,24 +93,28 @@ body {
 .content {
   position: absolute;
   inset: 0;
-  padding: 120px 90px 90px 90px;
+  padding: 140px 110px 110px 110px;
   text-align: center;
   z-index: 10;
   color: ${imageUrl ? "#ffffff" : "#7a0f2a"};
   text-shadow: ${imageUrl ? "0 3px 12px rgba(0,0,0,0.85)" : "none"};
 }
 
+/* ===== TITLE ===== */
 .title {
   font-family: 'Great Vibes', cursive;
-  font-size: 92px;
-  margin-bottom: 10px;
+  font-size: 104px;
+  letter-spacing: 1px;
+  margin-bottom: 18px;
   color: #ffffff;
+
   text-shadow:
-    0 0 8px rgba(255,255,255,0.6),
-    0 0 18px rgba(212,175,55,0.6),
-    0 0 40px rgba(212,175,55,0.35);
+    0 0 10px rgba(255,255,255,0.9),
+    0 0 25px rgba(212,175,55,0.8),
+    0 0 60px rgba(212,175,55,0.45);
 }
 
+/* ===== SUBTITLE ===== */
 .subtitle {
   font-family: 'Cinzel', serif;
   font-size: 12px;
@@ -113,8 +124,9 @@ body {
   margin-bottom: 60px;
 }
 
+/* ===== BODY ===== */
 .body {
-  max-width: 520px;
+  max-width: 460px;
   margin: 0 auto;
   font-size: 18px;
   line-height: 1.9;
@@ -125,9 +137,20 @@ body {
   margin-bottom: 18px;
 }
 
-/* ===== SIGNATURE ===== */
+/* ===== SIGNATURE BLOCK ===== */
 .signature-block {
   margin-top: 70px;
+  position: relative;
+}
+
+/* glowing divider before signature */
+.signature-block::before {
+  content: "";
+  display: block;
+  width: 160px;
+  height: 1px;
+  margin: 40px auto 30px;
+  background: linear-gradient(to right, transparent, rgba(212,175,55,0.8), transparent);
 }
 
 .forever {
@@ -140,16 +163,10 @@ body {
   font-family: 'Great Vibes', cursive;
   font-size: 56px;
   color: #d4af37;
+
   text-shadow:
     0 0 10px rgba(212,175,55,0.8),
     0 0 25px rgba(212,175,55,0.5);
-}
-
-.flourish {
-  width: 120px;
-  height: 1px;
-  background: linear-gradient(to right, transparent, #d4af37, transparent);
-  margin: 14px auto 18px auto;
 }
 
 .footer {
@@ -157,6 +174,7 @@ body {
   font-size: 10px;
   letter-spacing: 2px;
   opacity: 0.6;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -179,12 +197,12 @@ body {
     <div class="signature-block">
       <div class="forever">Forever yours,</div>
       <div class="signature">${senderName || "Your Secret Admirer"}</div>
-      <div class="flourish"></div>
       <div class="footer">${today}</div>
     </div>
   </div>
 
 </div>
 </body>
-</html>`;
+</html>
+`;
 }
