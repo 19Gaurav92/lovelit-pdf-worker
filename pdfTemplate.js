@@ -11,23 +11,28 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
     .map((l) => `<p>${l}</p>`)
     .join("");
 
-  // --- SMART SIZING LOGIC ---
+  // --- SMART SIZING LOGIC (UPDATED) ---
   const charCount = letter.length;
-  const isLong = charCount > 1000; 
-  const isVeryLong = charCount > 1800;
+  
+  // FIX: Trigger "Long Mode" much earlier (600 chars instead of 1000)
+  // This ensures the 299 Plan (Medium) fits perfectly.
+  const isLong = charCount > 600; 
+  const isVeryLong = charCount > 1500;
 
   // Dynamic Styles
   const bodyFontSize = isVeryLong ? "14px" : isLong ? "16px" : "18px";
-  const bodyLineHeight = isVeryLong ? "1.5" : isLong ? "1.6" : "1.9";
-  const contentPadding = isLong ? "80px 90px" : "110px 100px"; 
-  const titleMargin = isLong ? "10px" : "20px";
-  const paragraphMargin = isLong ? "10px" : "18px";
+  const bodyLineHeight = isVeryLong ? "1.5" : isLong ? "1.7" : "1.9";
+  
+  // FIX: Reduced vertical padding to prevent cut-off at the bottom
+  const contentPadding = isLong ? "60px 80px" : "85px 100px"; 
+  const titleMargin = isLong ? "10px" : "25px";
+  const paragraphMargin = isLong ? "12px" : "18px";
 
-  // --- THEME LOGIC (Dark Mode vs Pink Mode) ---
-  const textColor = imageUrl ? "#ffffff" : "#5e0a18"; // White if photo, Deep Rose if pink
+  // --- THEME LOGIC ---
+  const textColor = imageUrl ? "#ffffff" : "#5e0a18"; 
   const textShadow = imageUrl ? "0 2px 10px rgba(0,0,0,0.9)" : "none";
   const titleColor = imageUrl ? "#ffffff" : "#881337"; 
-  const subtitleColor = imageUrl ? "#d4af37" : "#b48a20"; // Gold matches both
+  const subtitleColor = imageUrl ? "#d4af37" : "#b48a20";
 
   return `
 <!DOCTYPE html>
@@ -41,7 +46,6 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
   
   body { 
     margin: 0; 
-    /* Fallback to Pink if no image */
     background: ${imageUrl ? "#000" : "#fff0f5"}; 
     -webkit-print-color-adjust: exact; 
     font-family: 'Playfair Display', serif; 
@@ -57,7 +61,7 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
   /* BACKGROUND IMAGE */
   .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
   
-  /* VIGNETTE - Only show if Image exists */
+  /* VIGNETTE */
   .vignette { 
     position: absolute; 
     inset: 0; 
@@ -87,13 +91,14 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
     inset: 0;
     padding: ${contentPadding};
     text-align: center;
-    /* Dynamic Colors based on mode */
     color: ${textColor};
     text-shadow: ${textShadow};
     z-index: 10;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; 
+    /* FIX: Changed from space-between to avoid pushing signature off-screen */
+    justify-content: flex-start; 
+    gap: 20px;
   }
 
   .header-group { flex-shrink: 0; }
@@ -112,17 +117,17 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
     font-size: 11px; 
     letter-spacing: 5px; 
     color: ${subtitleColor}; 
-    margin-bottom: ${isLong ? "20px" : "40px"}; 
     text-transform: uppercase;
   }
 
   /* BODY TEXT */
   .body {
-    max-width: 520px;
+    max-width: 540px;
     margin: 0 auto;
     font-size: ${bodyFontSize}; 
     line-height: ${bodyLineHeight};
     opacity: 0.95;
+    /* FIX: Allow body to grow but not force overflow */
     flex-grow: 1;
     display: flex; 
     flex-direction: column; 
@@ -133,9 +138,11 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
   /* SIGNATURE AREA */
   .signature-area { 
     flex-shrink: 0; 
-    margin-top: 10px; 
-    padding-top: ${isLong ? "15px" : "30px"};
+    /* FIX: Auto margin top pushes it to the bottom safely */
+    margin-top: auto; 
+    padding-top: 15px;
     position: relative;
+    width: 100%;
   }
   
   .signature-area::before {
