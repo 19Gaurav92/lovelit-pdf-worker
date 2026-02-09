@@ -1,12 +1,4 @@
-export function createLoveLetterHTML({
-  letter,
-  imageUrl,
-  senderName,
-}: {
-  letter: string;
-  imageUrl?: string;
-  senderName?: string;
-}) {
+export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
   const today = new Date().toLocaleDateString("en-US", {
     year: "numeric",
     month: "long",
@@ -19,8 +11,7 @@ export function createLoveLetterHTML({
     .map((l) => `<p>${l}</p>`)
     .join("");
 
-  return `
-<!DOCTYPE html>
+  return `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8" />
@@ -41,7 +32,6 @@ body {
   font-family: 'Playfair Display', serif;
 }
 
-/* ===== PAGE BASE ===== */
 .page {
   position: relative;
   width: 794px;
@@ -67,7 +57,6 @@ body {
   z-index: 1;
 }
 
-/* cinematic dark gradient for luxury feel */
 .bg-vignette {
   position: absolute;
   inset: 0;
@@ -75,7 +64,7 @@ body {
   z-index: 2;
 }
 
-/* ===== GOLD FRAME ===== */
+/* ===== FRAME ===== */
 .frame {
   position: absolute;
   inset: 40px;
@@ -104,21 +93,17 @@ body {
   text-shadow: ${imageUrl ? "0 3px 12px rgba(0,0,0,0.85)" : "none"};
 }
 
-/* ===== TITLE ===== */
 .title {
   font-family: 'Great Vibes', cursive;
   font-size: 92px;
   margin-bottom: 10px;
   color: #ffffff;
-
-  /* gold glow */
   text-shadow:
     0 0 8px rgba(255,255,255,0.6),
     0 0 18px rgba(212,175,55,0.6),
     0 0 40px rgba(212,175,55,0.35);
 }
 
-/* ===== SUBTITLE ===== */
 .subtitle {
   font-family: 'Cinzel', serif;
   font-size: 12px;
@@ -128,7 +113,6 @@ body {
   margin-bottom: 60px;
 }
 
-/* ===== BODY ===== */
 .body {
   max-width: 520px;
   margin: 0 auto;
@@ -141,7 +125,7 @@ body {
   margin-bottom: 18px;
 }
 
-/* ===== SIGNATURE BLOCK ===== */
+/* ===== SIGNATURE ===== */
 .signature-block {
   margin-top: 70px;
 }
@@ -152,18 +136,15 @@ body {
   margin-bottom: 12px;
 }
 
-/* luxury signature */
 .signature {
   font-family: 'Great Vibes', cursive;
   font-size: 56px;
   color: #d4af37;
-
   text-shadow:
     0 0 10px rgba(212,175,55,0.8),
     0 0 25px rgba(212,175,55,0.5);
 }
 
-/* elegant underline flourish */
 .flourish {
   width: 120px;
   height: 1px;
@@ -171,7 +152,6 @@ body {
   margin: 14px auto 18px auto;
 }
 
-/* ===== FOOTER ===== */
 .footer {
   font-family: 'Cinzel', serif;
   font-size: 10px;
@@ -206,6 +186,5 @@ body {
 
 </div>
 </body>
-</html>
-`;
+</html>`;
 }
