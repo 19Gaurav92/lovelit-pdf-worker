@@ -38,149 +38,151 @@ app.post("/generate-pdf", async (req, res) => {
       .join("");
 
     // 🔥 SAME STYLED HTML YOU HAD IN VERCEL
-    const html = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8" />
-          <style>
-            @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital@0;1&display=swap');
+   const html = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital@0;1&display=swap');
 
-            @page { margin: 0; size: A4; }
+@page { margin: 0; size: A4; }
 
-            body {
-              margin: 0;
-              padding: 0;
-              width: 210mm;
-              height: 297mm;
-              background-color: ${imageUrl ? "#000000" : "#fff0f5"};
-              -webkit-print-color-adjust: exact;
-              print-color-adjust: exact;
-              font-family: 'Playfair Display', serif;
-              overflow: hidden;
-            }
+body {
+  margin: 0;
+  padding: 0;
+  width: 210mm;
+  height: 297mm;
+  background: ${imageUrl ? "#000" : "#fff0f5"};
+  font-family: 'Playfair Display', serif;
+  -webkit-print-color-adjust: exact;
+}
 
-            .page-wrapper {
-              position: relative;
-              width: 100%;
-              height: 100%;
-              overflow: hidden;
-            }
+.page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
 
-            .bg-image {
-              position: absolute;
-              inset: 0;
-              width: 100%;
-              height: 100%;
-              object-fit: cover;
-              opacity: ${imageUrl ? "1" : "0"};
-              z-index: 1;
-            }
+/* background */
+.bg {
+  position: absolute;
+  inset: 0;
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
 
-            .bg-overlay {
-              position: absolute;
-              inset: 0;
-              background: ${imageUrl ? "rgba(0,0,0,0.5)" : "transparent"};
-              z-index: 2;
-            }
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: ${imageUrl ? "rgba(0,0,0,0.45)" : "transparent"};
+  z-index: 2;
+}
 
-            .container {
-              position: relative;
-              z-index: 10;
-              height: 100vh;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-            }
+/* frame */
+.frame {
+  position: absolute;
+  inset: 30px;
+  border: 3px double #d4af37;
+  z-index: 5;
+}
 
-            .frame {
-              position: relative;
-              width: 85%;
-              min-height: 88%;
-              border: 3px double #d4af37;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              padding: 40px;
-            }
+.frame::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid #d4af37;
+}
 
-            .frame::before {
-              content: "";
-              position: absolute;
-              inset: 5px;
-              border: 1px solid #d4af37;
-            }
+/* corner ornaments */
+.corner {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-color: #d4af37;
+  z-index: 6;
+}
 
-            .content-box {
-              max-width: 540px;
-              width: 100%;
-              text-align: center;
-              color: ${imageUrl ? "#ffffff" : "#881337"};
-              text-shadow: ${imageUrl ? "0 2px 4px rgba(0,0,0,0.8)" : "none"};
-            }
+.corner.tl { top: 20px; left: 20px; border-left: 2px solid; border-top: 2px solid; }
+.corner.br { bottom: 20px; right: 20px; border-right: 2px solid; border-bottom: 2px solid; }
 
-            .main-heading {
-              font-family: 'Great Vibes', cursive;
-              font-size: 55px;
-              margin-bottom: 15px;
-              color: ${imageUrl ? "#ffffff" : "#be123c"};
-            }
+/* content */
+.content {
+  position: relative;
+  z-index: 10;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 80px;
+  color: ${imageUrl ? "#fff" : "#881337"};
+  text-shadow: ${imageUrl ? "0 2px 6px rgba(0,0,0,0.8)" : "none"};
+}
 
-            .sub-heading {
-              font-size: 10px;
-              letter-spacing: 3px;
-              text-transform: uppercase;
-              margin-bottom: 30px;
-              color: ${imageUrl ? "#d4af37" : "#be123c"};
-            }
+.title {
+  font-family: 'Great Vibes', cursive;
+  font-size: 60px;
+  margin-bottom: 10px;
+}
 
-            .letter-body {
-              font-size: 17px;
-              line-height: 1.6;
-              margin-bottom: 20px;
-              color: ${imageUrl ? "#f5f5f5" : "#4a0418"};
-            }
+.subtitle {
+  font-size: 10px;
+  letter-spacing: 4px;
+  margin-bottom: 30px;
+  color: #d4af37;
+}
 
-            .signature {
-              font-family: 'Great Vibes', cursive;
-              font-size: 45px;
-              margin-top: 30px;
-              color: #d4af37;
-            }
+.body {
+  max-width: 520px;
+  font-size: 17px;
+  line-height: 1.7;
+}
 
-            .footer {
-              margin-top: 30px;
-              font-size: 9px;
-              opacity: 0.7;
-              letter-spacing: 1px;
-              border-top: 1px solid rgba(190,18,60,0.3);
-              padding-top: 12px;
-              display: inline-block;
-              color: ${imageUrl ? "#ddd" : "#881337"};
-            }
-          </style>
-        </head>
+.signature {
+  font-family: 'Great Vibes', cursive;
+  font-size: 44px;
+  margin-top: 40px;
+  color: #d4af37;
+}
 
-        <body>
-          <div class="page-wrapper">
-            ${imageUrl ? `<img src="${imageUrl}" class="bg-image" />` : ""}
-            <div class="bg-overlay"></div>
+.footer {
+  margin-top: 20px;
+  font-size: 9px;
+  opacity: 0.7;
+}
+</style>
+</head>
 
-            <div class="container">
-              <div class="frame">
-                <div class="content-box">
-                  <div class="main-heading">My Love</div>
-                  <div class="sub-heading">A Letter From The Heart</div>
-                  <div class="letter-body">${paragraphs}</div>
-                  <div class="signature">${senderName || "Your Love"}</div>
-                  <div class="footer">${today} • Forever Yours</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+<body>
+<div class="page">
+
+  ${imageUrl ? `<img src="${imageUrl}" class="bg"/>` : ""}
+  <div class="overlay"></div>
+
+  <div class="frame"></div>
+  <div class="corner tl"></div>
+  <div class="corner br"></div>
+
+  <div class="content">
+    <div class="title">My Love</div>
+    <div class="subtitle">A LETTER FROM THE HEART</div>
+
+    <div class="body">${paragraphs}</div>
+
+    <div class="signature">${senderName || "Your Love"}</div>
+    <div class="footer">${today} • Forever Yours</div>
+  </div>
+
+</div>
+</body>
+</html>
+`;
+
 
     await page.setContent(html, { waitUntil: "load" });
 
