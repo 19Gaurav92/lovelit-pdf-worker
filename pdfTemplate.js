@@ -25,89 +25,92 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
 <style>
 @page { margin: 0; size: A4; }
 
-body {
-  margin: 0;
-  padding: 0;
-  background: ${imageUrl ? "#000" : "#fff0f5"};
-  -webkit-print-color-adjust: exact;
-  font-family: 'Playfair Display', serif;
+body{
+  margin:0;
+  background:${imageUrl ? "#000" : "#fff0f5"};
+  -webkit-print-color-adjust:exact;
+  font-family:'Playfair Display', serif;
 }
 
 /* ===== PAGE ===== */
-.page {
-  position: relative;
-  width: 794px;
-  height: 1123px;
-  overflow: hidden;
+.page{
+  position:relative;
+  width:794px;
+  height:1123px;
+  overflow:hidden;
 }
 
 /* ===== BACKGROUND ===== */
-.bg-color {
-  position: absolute;
-  inset: 0;
-  background: ${imageUrl ? "#12090c" : "#fff0f5"};
-  z-index: 0;
+.bg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  opacity:${imageUrl ? 1 : 0};
+  z-index:1;
 }
 
-.bg-image {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: ${imageUrl ? "1" : "0"};
-  z-index: 1;
-}
-
-/* CINEMATIC VIGNETTE (STRONGER) */
-.bg-vignette {
-  position: absolute;
-  inset: 0;
+.vignette{
+  position:absolute;
+  inset:0;
   background:
     radial-gradient(circle at center,
       rgba(0,0,0,0.15) 0%,
       rgba(0,0,0,0.55) 55%,
-      rgba(0,0,0,0.92) 100%);
-  z-index: 2;
+      rgba(0,0,0,0.95) 100%);
+  z-index:2;
 }
 
 /* ===== GOLD FRAME ===== */
-.frame {
-  position: absolute;
-  inset: 40px;
-  border: 2px solid #d4af37;
+.frame{
+  position:absolute;
+  inset:40px;
+  border:2px solid #d4af37;
   box-shadow:
-    inset 0 0 25px rgba(0,0,0,0.35),
+    inset 0 0 25px rgba(0,0,0,0.4),
     0 0 25px rgba(212,175,55,0.25);
-  z-index: 5;
+  z-index:5;
+}
+.frame::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(212,175,55,0.8);
 }
 
-.frame::before {
-  content: "";
-  position: absolute;
-  inset: 8px;
-  border: 1px solid rgba(212,175,55,0.8);
+/* ===== HEART DECOR ===== */
+.heart{
+  position:absolute;
+  color:#ffb6c1;
+  opacity:0.25;
+  font-size:22px;
+  z-index:6;
 }
+.h1{ top:90px; left:90px; }
+.h2{ top:120px; right:110px; }
+.h3{ bottom:110px; left:120px; }
+.h4{ bottom:140px; right:100px; }
 
 /* ===== CONTENT ===== */
-.content {
-  position: absolute;
-  inset: 0;
-  padding: 140px 110px 110px 110px;
-  text-align: center;
-  z-index: 10;
-  color: ${imageUrl ? "#ffffff" : "#7a0f2a"};
-  text-shadow: ${imageUrl ? "0 3px 12px rgba(0,0,0,0.85)" : "none"};
+.content{
+  position:absolute;
+  inset:0;
+  padding:130px 110px 120px 110px;
+  text-align:center;
+  color:#ffffff;
+  text-shadow:0 3px 12px rgba(0,0,0,0.85);
+  z-index:10;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
 
 /* ===== TITLE ===== */
-.title {
-  font-family: 'Great Vibes', cursive;
-  font-size: 104px;
-  letter-spacing: 1px;
-  margin-bottom: 18px;
-  color: #ffffff;
-
+.title{
+  font-family:'Great Vibes', cursive;
+  font-size:100px;
+  margin-bottom:18px;
   text-shadow:
     0 0 10px rgba(255,255,255,0.9),
     0 0 25px rgba(212,175,55,0.8),
@@ -115,66 +118,60 @@ body {
 }
 
 /* ===== SUBTITLE ===== */
-.subtitle {
-  font-family: 'Cinzel', serif;
-  font-size: 12px;
-  letter-spacing: 6px;
-  text-transform: uppercase;
-  color: #d4af37;
-  margin-bottom: 60px;
+.subtitle{
+  font-family:'Cinzel', serif;
+  font-size:12px;
+  letter-spacing:6px;
+  color:#d4af37;
+  margin-bottom:50px;
 }
 
 /* ===== BODY ===== */
-.body {
-  max-width: 460px;
-  margin: 0 auto;
-  font-size: 18px;
-  line-height: 1.9;
-  font-weight: 500;
+.body{
+  max-width:460px;
+  margin:0 auto;
+  font-size:18px;
+  line-height:1.9;
+}
+.body p{ margin-bottom:18px; }
+
+/* ===== SIGNATURE AREA (LOCKED TO BOTTOM) ===== */
+.signature-area{
+  margin-top:auto;
+  padding-top:40px;
 }
 
-.body p {
-  margin-bottom: 18px;
+/* divider */
+.signature-area::before{
+  content:"";
+  display:block;
+  width:160px;
+  height:1px;
+  margin:0 auto 24px;
+  background:linear-gradient(to right, transparent, #d4af37, transparent);
 }
 
-/* ===== SIGNATURE BLOCK ===== */
-.signature-block {
-  margin-top: 70px;
-  position: relative;
+.forever{
+  font-size:16px;
+  margin-bottom:10px;
+  opacity:0.9;
 }
 
-/* glowing divider before signature */
-.signature-block::before {
-  content: "";
-  display: block;
-  width: 160px;
-  height: 1px;
-  margin: 40px auto 30px;
-  background: linear-gradient(to right, transparent, rgba(212,175,55,0.8), transparent);
-}
-
-.forever {
-  font-size: 16px;
-  opacity: 0.9;
-  margin-bottom: 12px;
-}
-
-.signature {
-  font-family: 'Great Vibes', cursive;
-  font-size: 56px;
-  color: #d4af37;
-
+.signature{
+  font-family:'Great Vibes', cursive;
+  font-size:58px;
+  color:#d4af37;
   text-shadow:
-    0 0 10px rgba(212,175,55,0.8),
-    0 0 25px rgba(212,175,55,0.5);
+    0 0 10px rgba(212,175,55,0.9),
+    0 0 30px rgba(212,175,55,0.5);
 }
 
-.footer {
-  font-family: 'Cinzel', serif;
-  font-size: 10px;
-  letter-spacing: 2px;
-  opacity: 0.6;
-  margin-top: 10px;
+.date{
+  margin-top:12px;
+  font-family:'Cinzel', serif;
+  font-size:10px;
+  letter-spacing:2px;
+  opacity:0.65;
 }
 </style>
 </head>
@@ -182,11 +179,16 @@ body {
 <body>
 <div class="page">
 
-  <div class="bg-color"></div>
-  ${imageUrl ? `<img src="${imageUrl}" class="bg-image"/>` : ""}
-  <div class="bg-vignette"></div>
+  ${imageUrl ? `<img src="${imageUrl}" class="bg"/>` : ""}
+  <div class="vignette"></div>
 
   <div class="frame"></div>
+
+  <!-- romantic hearts -->
+  <div class="heart h1">♥</div>
+  <div class="heart h2">♥</div>
+  <div class="heart h3">♥</div>
+  <div class="heart h4">♥</div>
 
   <div class="content">
     <div class="title">My Love</div>
@@ -194,10 +196,10 @@ body {
 
     <div class="body">${paragraphs}</div>
 
-    <div class="signature-block">
+    <div class="signature-area">
       <div class="forever">Forever yours,</div>
       <div class="signature">${senderName || "Your Secret Admirer"}</div>
-      <div class="footer">${today}</div>
+      <div class="date">${today}</div>
     </div>
   </div>
 
