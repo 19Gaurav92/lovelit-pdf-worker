@@ -11,28 +11,25 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
     .map((l) => `<p>${l}</p>`)
     .join("");
 
-  // --- SMART SIZING LOGIC (UPDATED) ---
+  // --- SMART SIZING LOGIC ---
   const charCount = letter.length;
-  
-  // FIX: Trigger "Long Mode" much earlier (600 chars instead of 1000)
-  // This ensures the 299 Plan (Medium) fits perfectly.
-  const isLong = charCount > 600; 
+  // Trigger compact mode earlier to save the 299 Plan
+  const isLong = charCount > 700; 
   const isVeryLong = charCount > 1500;
 
-  // Dynamic Styles
-  const bodyFontSize = isVeryLong ? "14px" : isLong ? "16px" : "18px";
-  const bodyLineHeight = isVeryLong ? "1.5" : isLong ? "1.7" : "1.9";
+  // Dynamic CSS Variables
+  const bodyFontSize = isVeryLong ? "15px" : isLong ? "16px" : "19px";
+  const bodyLineHeight = isVeryLong ? "1.5" : isLong ? "1.6" : "1.8";
+  const contentPadding = isLong ? "60px 80px" : "90px 100px"; 
   
-  // FIX: Reduced vertical padding to prevent cut-off at the bottom
-  const contentPadding = isLong ? "60px 80px" : "85px 100px"; 
-  const titleMargin = isLong ? "10px" : "25px";
-  const paragraphMargin = isLong ? "12px" : "18px";
-
-  // --- THEME LOGIC ---
+  // Logic: "No Photo" mode gets a Deep Red text, "Photo" mode gets White text with Glow
   const textColor = imageUrl ? "#ffffff" : "#5e0a18"; 
-  const textShadow = imageUrl ? "0 2px 10px rgba(0,0,0,0.9)" : "none";
   const titleColor = imageUrl ? "#ffffff" : "#881337"; 
-  const subtitleColor = imageUrl ? "#d4af37" : "#b48a20";
+  
+  // The "Glow" effect for the title
+  const titleGlow = imageUrl 
+    ? "0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.4), 0 0 40px rgba(212,175,55,0.5)" 
+    : "none";
 
   return `
 <!DOCTYPE html>
@@ -58,107 +55,121 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
     overflow: hidden; 
   }
 
-  /* BACKGROUND IMAGE */
-  .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 1; }
+  /* --- LAYERS --- */
   
-  /* VIGNETTE */
+  /* 1. Background Image */
+  .bg { 
+    position: absolute; inset: 0; width: 100%; height: 100%; 
+    object-fit: cover; z-index: 1; 
+  }
+  
+  /* 2. Rich Vignette (Darker edges for readability) */
   .vignette { 
-    position: absolute; 
-    inset: 0; 
-    background: radial-gradient(circle at center, rgba(0,0,0,0.15) 0%, rgba(0,0,0,0.55) 60%, rgba(0,0,0,0.95) 100%); 
+    position: absolute; inset: 0; 
+    background: radial-gradient(circle at center, rgba(0,0,0,0.1) 10%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.85) 90%); 
     z-index: 2; 
     display: ${imageUrl ? "block" : "none"};
   }
 
-  /* GOLD FRAME */
-  .frame { 
-    position: absolute; 
-    inset: 30px; 
+  /* 3. Gold Frame (Outer & Inner) */
+  .frame-outer { 
+    position: absolute; inset: 25px; 
     border: 2px solid #d4af37; 
-    box-shadow: inset 0 0 25px rgba(0,0,0,0.4); 
+    box-shadow: 0 0 15px rgba(212,175,55,0.3), inset 0 0 30px rgba(0,0,0,0.5);
     z-index: 5; 
   }
-  .frame::before { content: ""; position: absolute; inset: 6px; border: 1px solid rgba(212,175,55,0.7); }
+  .frame-inner { 
+    position: absolute; inset: 32px; 
+    border: 1px solid rgba(212,175,55,0.6); 
+    z-index: 5; 
+  }
 
-  /* HEARTS */
-  .heart { position: absolute; color: #ffb6c1; opacity: 0.4; font-size: 24px; z-index: 6; }
-  .h1 { top: 80px; left: 80px; } .h2 { top: 110px; right: 100px; }
-  .h3 { bottom: 100px; left: 110px; } .h4 { bottom: 130px; right: 90px; }
+  /* 4. Decorative Hearts (Scattered) */
+  .deco-heart { position: absolute; font-size: 20px; opacity: 0.6; z-index: 6; }
+  .gold { color: #d4af37; text-shadow: 0 0 5px rgba(212,175,55,0.8); }
+  .pink { color: #ffb6c1; text-shadow: 0 0 5px rgba(255,182,193,0.8); }
 
-  /* CONTENT CONTAINER */
+  /* Positions */
+  .h1 { top: 60px; left: 60px; font-size: 24px; } /* Top Left Gold */
+  .h2 { top: 90px; right: 80px; font-size: 18px; } /* Top Right Pink */
+  .h3 { bottom: 80px; left: 90px; font-size: 18px; } /* Bottom Left Pink */
+  .h4 { bottom: 60px; right: 60px; font-size: 24px; } /* Bottom Right Gold */
+  .h5 { top: 50%; left: 45px; font-size: 14px; opacity: 0.4; } /* Mid Left */
+  .h6 { top: 55%; right: 45px; font-size: 14px; opacity: 0.4; } /* Mid Right */
+
+
+  /* 5. Main Content */
   .content {
     position: absolute;
     inset: 0;
     padding: ${contentPadding};
     text-align: center;
     color: ${textColor};
-    text-shadow: ${textShadow};
     z-index: 10;
     display: flex;
     flex-direction: column;
-    /* FIX: Changed from space-between to avoid pushing signature off-screen */
-    justify-content: flex-start; 
-    gap: 20px;
+    height: 100%;
+    box-sizing: border-box;
   }
 
-  .header-group { flex-shrink: 0; }
+  /* Header Section */
+  .header-group { flex-shrink: 0; margin-bottom: 20px; }
 
   .title { 
     font-family: 'Great Vibes', cursive; 
-    font-size: ${isLong ? "80px" : "100px"}; 
-    margin-bottom: ${titleMargin}; 
+    font-size: ${isLong ? "85px" : "105px"}; 
     line-height: 1;
     color: ${titleColor};
-    text-shadow: ${imageUrl ? "0 0 15px rgba(255,255,255,0.4)" : "none"};
+    /* THE GLOW MAGIC */
+    text-shadow: ${titleGlow};
+    margin-bottom: 10px;
   }
 
   .subtitle { 
     font-family: 'Cinzel', serif; 
     font-size: 11px; 
-    letter-spacing: 5px; 
-    color: ${subtitleColor}; 
+    letter-spacing: 6px; 
+    color: #d4af37; 
     text-transform: uppercase;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
   }
 
-  /* BODY TEXT */
+  /* Body Text (Centered Vertically) */
   .body {
-    max-width: 540px;
-    margin: 0 auto;
+    max-width: 560px; /* Slightly wider to fit more text per line */
+    margin: auto; /* CRITICAL: Centers vertically */
     font-size: ${bodyFontSize}; 
     line-height: ${bodyLineHeight};
     opacity: 0.95;
-    /* FIX: Allow body to grow but not force overflow */
-    flex-grow: 1;
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center;
+    text-shadow: ${imageUrl ? "0 2px 4px rgba(0,0,0,0.9)" : "none"};
   }
-  .body p { margin-bottom: ${paragraphMargin}; }
+  .body p { margin-bottom: 15px; }
 
-  /* SIGNATURE AREA */
+  /* Signature Section (Pushed to bottom) */
   .signature-area { 
     flex-shrink: 0; 
-    /* FIX: Auto margin top pushes it to the bottom safely */
-    margin-top: auto; 
-    padding-top: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
     position: relative;
     width: 100%;
   }
   
+  /* The elegant divider line */
   .signature-area::before {
-    content: ""; display: block; width: 140px; height: 1px; margin: 0 auto 15px;
+    content: ""; display: block; width: 120px; height: 1px; margin: 0 auto 15px;
     background: linear-gradient(to right, transparent, #d4af37, transparent);
-    opacity: 0.6;
+    opacity: 0.8;
   }
 
-  .forever { font-size: 14px; opacity: 0.8; margin-bottom: 5px; font-style: italic; }
+  .forever { font-size: 14px; opacity: 0.9; margin-bottom: 5px; font-style: italic; }
   .signature { 
     font-family: 'Great Vibes', cursive; 
-    font-size: ${isLong ? "45px" : "58px"}; 
+    font-size: ${isLong ? "50px" : "60px"}; 
     color: #d4af37; 
     line-height: 1;
+    text-shadow: 0 0 10px rgba(212,175,55,0.6);
   }
-  .date { margin-top: 8px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; opacity: 0.6; }
+  .date { margin-top: 8px; font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 2px; opacity: 0.7; color: #fff; }
 
 </style>
 </head>
@@ -168,10 +179,15 @@ export function createLoveLetterHTML({ letter, imageUrl, senderName }) {
   ${imageUrl ? `<img src="${imageUrl}" class="bg"/>` : ""}
   
   <div class="vignette"></div>
-  <div class="frame"></div>
+  
+  <div class="frame-outer"></div>
+  <div class="frame-inner"></div>
 
-  <div class="heart h1">♥</div> <div class="heart h2">♥</div>
-  <div class="heart h3">♥</div> <div class="heart h4">♥</div>
+  <div class="deco-heart pink h1">♥</div>
+  <div class="deco-heart gold h2">♥</div>
+  <div class="deco-heart gold h3">♥</div>
+  <div class="deco-heart pink h4">♥</div>
+  <div class="deco-heart gold h5">✦</div> <div class="deco-heart gold h6">✦</div>
 
   <div class="content">
     
